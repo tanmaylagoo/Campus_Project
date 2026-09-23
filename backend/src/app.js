@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth.routes.js'); 
 
 const app = express();
+const menuRouter = require('./routes/menuRouter');
 
 app.use(
     cors({
@@ -29,6 +30,8 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 
+app.use('/api/menu', menuRouter);
+
 // 404 Handler
 app.use((req, res) => {
     res.status(404).json({
@@ -36,5 +39,9 @@ app.use((req, res) => {
         message: 'API route not found'
     });
 });
+
+
+
+
 
 module.exports = app;
