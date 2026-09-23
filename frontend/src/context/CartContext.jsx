@@ -1,4 +1,3 @@
-
 import React, {
   createContext,
   useContext,
@@ -8,14 +7,20 @@ import React, {
 
 const CartContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL;;
+const API_URL = import.meta.env.VITE_API_URL;
 
 
-// Initial cart
+// =========================
+// INITIAL CART
+// =========================
+
 const INITIAL_CART = [];
 
 
-// Initial current orders
+// =========================
+// INITIAL CURRENT ORDERS
+// =========================
+
 const INITIAL_CURRENT_ORDERS = [
   {
     id: 'CH-9482',
@@ -34,7 +39,10 @@ const INITIAL_CURRENT_ORDERS = [
 ];
 
 
-// Initial order history
+// =========================
+// INITIAL ORDER HISTORY
+// =========================
+
 const INITIAL_ORDER_HISTORY = [
   {
     id: 'CH-9310',
@@ -76,14 +84,19 @@ const INITIAL_ORDER_HISTORY = [
 
 export const CartProvider = ({ children }) => {
 
-
+  // =========================
+  // MENU
+  // =========================
 
   const [menuItems, setMenuItems] = useState([]);
-  const [menuLoading, setMenuLoading] = useState(true);
-  const [menuError, setMenuError] = useState(null);
+
+  const [menuLoading, setMenuLoading] =
+    useState(true);
+
+  const [menuError, setMenuError] =
+    useState(null);
 
 
-  // Fetch menu from backend
   useEffect(() => {
 
     const fetchMenu = async () => {
@@ -103,7 +116,8 @@ export const CartProvider = ({ children }) => {
           );
         }
 
-        const data = await response.json();
+        const data =
+          await response.json();
 
         setMenuItems(data);
 
@@ -123,6 +137,7 @@ export const CartProvider = ({ children }) => {
         setMenuLoading(false);
 
       }
+
     };
 
     fetchMenu();
@@ -137,7 +152,9 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
 
     const saved =
-      localStorage.getItem('canteen_cart');
+      localStorage.getItem(
+        'canteen_cart'
+      );
 
     return saved
       ? JSON.parse(saved)
@@ -150,36 +167,38 @@ export const CartProvider = ({ children }) => {
   // CURRENT ORDERS
   // =========================
 
-  const [currentOrders, setCurrentOrders] = useState(() => {
+  const [currentOrders, setCurrentOrders] =
+    useState(() => {
 
-    const saved =
-      localStorage.getItem(
-        'canteen_current_orders'
-      );
+      const saved =
+        localStorage.getItem(
+          'canteen_current_orders'
+        );
 
-    return saved
-      ? JSON.parse(saved)
-      : INITIAL_CURRENT_ORDERS;
+      return saved
+        ? JSON.parse(saved)
+        : INITIAL_CURRENT_ORDERS;
 
-  });
+    });
 
 
   // =========================
   // ORDER HISTORY
   // =========================
 
-  const [orderHistory, setOrderHistory] = useState(() => {
+  const [orderHistory, setOrderHistory] =
+    useState(() => {
 
-    const saved =
-      localStorage.getItem(
-        'canteen_order_history'
-      );
+      const saved =
+        localStorage.getItem(
+          'canteen_order_history'
+        );
 
-    return saved
-      ? JSON.parse(saved)
-      : INITIAL_ORDER_HISTORY;
+      return saved
+        ? JSON.parse(saved)
+        : INITIAL_ORDER_HISTORY;
 
-  });
+    });
 
 
   // =========================
@@ -224,9 +243,10 @@ export const CartProvider = ({ children }) => {
 
     setCartItems((prev) => {
 
-      const existing = prev.find(
-        (i) => i.id === item.id
-      );
+      const existing =
+        prev.find(
+          (i) => i.id === item.id
+        );
 
       if (existing) {
 
@@ -234,7 +254,8 @@ export const CartProvider = ({ children }) => {
           i.id === item.id
             ? {
                 ...i,
-                quantity: i.quantity + 1
+                quantity:
+                  i.quantity + 1
               }
             : i
         );
@@ -258,7 +279,10 @@ export const CartProvider = ({ children }) => {
   // UPDATE QUANTITY
   // =========================
 
-  const updateQuantity = (id, delta) => {
+  const updateQuantity = (
+    id,
+    delta
+  ) => {
 
     setCartItems((prev) => {
 
@@ -276,6 +300,7 @@ export const CartProvider = ({ children }) => {
                   quantity: newQty
                 }
               : null;
+
           }
 
           return item;
@@ -318,29 +343,32 @@ export const CartProvider = ({ children }) => {
   // PLACE ORDER
   // =========================
 
-  const placeOrder = (details = {}) => {
+  const placeOrder = (
+    details = {}
+  ) => {
 
     if (cartItems.length === 0) {
       return null;
     }
 
-
-    const itemsSummary = cartItems
-      .map(
-        (item) =>
-          `${
-            item.quantity > 1
-              ? `${item.quantity}x `
-              : ''
-          }${item.name}`
-      )
-      .join(' + ');
+    const itemsSummary =
+      cartItems
+        .map(
+          (item) =>
+            `${
+              item.quantity > 1
+                ? `${item.quantity}x `
+                : ''
+            }${item.name}`
+        )
+        .join(' + ');
 
 
     const newOrder = {
 
       id: `CH-${Math.floor(
-        1000 + Math.random() * 9000
+        1000 +
+        Math.random() * 9000
       )}`,
 
       items: itemsSummary,
@@ -358,10 +386,12 @@ export const CartProvider = ({ children }) => {
     };
 
 
-    setCurrentOrders((prev) => [
-      newOrder,
-      ...prev
-    ]);
+    setCurrentOrders(
+      (prev) => [
+        newOrder,
+        ...prev
+      ]
+    );
 
 
     clearCart();
@@ -378,42 +408,45 @@ export const CartProvider = ({ children }) => {
 
   const reorder = (order) => {
 
-    const matching = menuItems.find(
-      (menuItem) =>
-        order.items
-          .toLowerCase()
-          .includes(
-            menuItem.name.toLowerCase()
-          )
-    );
+    const matching =
+      menuItems.find(
+        (menuItem) =>
+          order.items
+            .toLowerCase()
+            .includes(
+              menuItem.name
+                .toLowerCase()
+            )
+      );
 
 
     if (matching) {
-
       addToCart(matching);
-
     }
 
   };
 
 
   // =========================
-  // CART CALCULATIONS
+  // CALCULATIONS
   // =========================
 
-  const itemCount = cartItems.reduce(
-    (sum, item) =>
-      sum + item.quantity,
-    0
-  );
+  const itemCount =
+    cartItems.reduce(
+      (sum, item) =>
+        sum + item.quantity,
+      0
+    );
 
 
-  const subtotal = cartItems.reduce(
-    (sum, item) =>
-      sum +
-      item.price * item.quantity,
-    0
-  );
+  const subtotal =
+    cartItems.reduce(
+      (sum, item) =>
+        sum +
+        item.price *
+          item.quantity,
+      0
+    );
 
 
   const serviceFee =
@@ -426,36 +459,30 @@ export const CartProvider = ({ children }) => {
     subtotal + serviceFee;
 
 
-  // =========================
-  // PROVIDER
-  // =========================
-
   return (
 
     <CartContext.Provider
       value={{
 
-        // Menu
         menuItems,
         menuLoading,
         menuError,
 
-        // Cart
         cartItems,
+
+        currentOrders,
+        orderHistory,
+
         itemCount,
         subtotal,
         serviceFee,
         totalAmount,
 
-        // Orders
-        currentOrders,
-        orderHistory,
-
-        // Functions
         addToCart,
         updateQuantity,
         removeFromCart,
         clearCart,
+
         placeOrder,
         reorder
 
@@ -470,10 +497,6 @@ export const CartProvider = ({ children }) => {
 
 };
 
-
-// =========================
-// USE CART
-// =========================
 
 export const useCart = () => {
 

@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import {
   Calendar,
   Search,
@@ -27,14 +27,22 @@ const Menu = () => {
   } = useCart();
 
 
-  const [selectedCategory, setSelectedCategory] =
-    useState('All');
+  const [
+    selectedCategory,
+    setSelectedCategory
+  ] = useState('All');
 
-  const [searchQuery, setSearchQuery] =
-    useState('');
 
-  const [addedAnimationId, setAddedAnimationId] =
-    useState(null);
+  const [
+    searchQuery,
+    setSearchQuery
+  ] = useState('');
+
+
+  const [
+    addedAnimationId,
+    setAddedAnimationId
+  ] = useState(null);
 
 
   // =========================
@@ -58,15 +66,16 @@ const Menu = () => {
 
 
   // =========================
-  // FILTER MENU
+  // FILTER ITEMS
   // =========================
 
-  const filteredItems = menuItems.filter(
-    (item) => {
+  const filteredItems =
+    menuItems.filter((item) => {
 
       const matchesCategory =
         selectedCategory === 'All' ||
-        item.category === selectedCategory;
+        item.category ===
+          selectedCategory;
 
 
       const search =
@@ -93,8 +102,7 @@ const Menu = () => {
         matchesSearch
       );
 
-    }
-  );
+    });
 
 
   // =========================
@@ -105,10 +113,14 @@ const Menu = () => {
 
     addToCart(item);
 
-    setAddedAnimationId(item.id);
+    setAddedAnimationId(
+      item.id
+    );
 
     setTimeout(() => {
+
       setAddedAnimationId(null);
+
     }, 1000);
 
   };
@@ -217,27 +229,34 @@ const Menu = () => {
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
 
-          {categories.map((category) => (
+          {categories.map(
+            (category) => (
 
-            <button
-              key={category}
-              onClick={() =>
-                setSelectedCategory(category)
-              }
-              type="button"
+              <button
+                key={category}
 
-              className={`px-4 py-2 rounded-lg text-xs font-medium transition-all shrink-0 cursor-pointer ${
-                selectedCategory === category
-                  ? 'bg-[#14805f] text-white font-semibold shadow-xs'
-                  : 'bg-white text-gray-700 border border-gray-200/90 hover:bg-gray-50'
-              }`}
-            >
+                onClick={() =>
+                  setSelectedCategory(
+                    category
+                  )
+                }
 
-              {category}
+                type="button"
 
-            </button>
+                className={`px-4 py-2 rounded-lg text-xs font-medium transition-all shrink-0 cursor-pointer ${
+                  selectedCategory ===
+                  category
+                    ? 'bg-[#14805f] text-white font-semibold shadow-xs'
+                    : 'bg-white text-gray-700 border border-gray-200/90 hover:bg-gray-50'
+                }`}
+              >
 
-          ))}
+                {category}
+
+              </button>
+
+            )
+          )}
 
         </div>
 
@@ -253,10 +272,13 @@ const Menu = () => {
 
           <input
             type="text"
+
             value={searchQuery}
 
             onChange={(e) =>
-              setSearchQuery(e.target.value)
+              setSearchQuery(
+                e.target.value
+              )
             }
 
             placeholder="Search dishes or ingredients..."
@@ -270,7 +292,7 @@ const Menu = () => {
 
 
       {/* =========================
-          DISH GRID
+          MENU GRID
       ========================= */}
 
       {filteredItems.length === 0 ? (
@@ -287,167 +309,169 @@ const Menu = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-          {filteredItems.map((dish) => {
+          {filteredItems.map(
+            (dish) => {
 
-            const isJustAdded =
-              addedAnimationId === dish.id;
-
-
-            return (
-
-              <div
-                key={dish.id}
-
-                className="bg-white rounded-2xl border border-gray-100/90 p-4 flex flex-col justify-between shadow-xs hover:shadow-md transition-all group"
-              >
+              const isJustAdded =
+                addedAnimationId ===
+                dish.id;
 
 
-                {/* =========================
-                    DISH DETAILS
-                ========================= */}
+              return (
 
-                <div>
+                <div
+                  key={dish.id}
 
+                  className="bg-white rounded-2xl border border-gray-100/90 p-3 flex flex-col justify-between shadow-xs hover:shadow-md transition-all group"
+                >
 
-                  {/* Food Image Placeholder */}
+                  {/* =========================
+                      IMAGE
+                  ========================= */}
 
-                  <div className="overflow-hidden rounded-xl h-32 bg-gradient-to-br from-emerald-50 to-gray-100 flex items-center justify-center">
+                  <div>
 
-                    <span className="text-5xl">
+                    <div className="overflow-hidden rounded-xl h-44 bg-gray-100 relative">
 
-                      {dish.category === 'Dosa'
-                        ? '🥞'
-                        : dish.category === 'Snacks'
-                        ? '🥪'
-                        : dish.category === 'Uttappam'
-                        ? '🍳'
-                        : dish.category === 'Sandwiches'
-                        ? '🥪'
-                        : dish.category === 'Grilled'
-                        ? '🥪'
-                        : dish.category === 'Rice'
-                        ? '🍚'
-                        : dish.category === 'Noodles'
-                        ? '🍜'
-                        : dish.category === 'Gravy'
-                        ? '🥘'
-                        : dish.category === 'Soup'
-                        ? '🍲'
-                        : dish.category === 'Chaat'
-                        ? '🥗'
-                        : dish.category === 'Lunch'
-                        ? '🍛'
-                        : '🍽️'}
+                      <img
+                        src={dish.image_url}
+                        alt={dish.name}
 
-                    </span>
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
 
-                  </div>
+                        loading="lazy"
+
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            'https://placehold.co/600x400?text=Food';
+                        }}
+                      />
+
+                    </div>
 
 
-                  <div className="px-1.5 pt-3.5 pb-2">
+                    {/* =========================
+                        DETAILS
+                    ========================= */}
+
+                    <div className="px-1.5 pt-3.5 pb-2">
 
 
-                    {/* Category */}
+                      {/* Category */}
 
-                    <span className="inline-block text-[10px] font-semibold text-[#14805f] bg-emerald-50 px-2 py-1 rounded-md mb-2">
+                      <span className="inline-block text-[10px] font-semibold text-[#14805f] bg-emerald-50 px-2 py-1 rounded-md mb-2">
 
-                      {dish.category}
+                        {dish.category}
 
-                    </span>
-
-
-                    {/* Dish Name */}
-
-                    <h3 className="text-sm font-bold text-[#111827]">
-
-                      {dish.name}
-
-                    </h3>
-
-
-                    {/* Ingredients */}
-
-                    <p className="text-xs text-[#64748b] leading-relaxed mt-1 line-clamp-2">
-
-                      {dish.ingredients.join(', ')}
-
-                    </p>
-
-
-                    {/* Preparation Time */}
-
-                    <div className="flex items-center gap-1.5 mt-3 text-xs text-gray-500">
-
-                      <Clock size={13} />
-
-                      <span>
-                        {dish.avgPrepTimeMinutes} min preparation
                       </span>
+
+
+                      {/* Name */}
+
+                      <h3 className="text-sm font-bold text-[#111827]">
+
+                        {dish.name}
+
+                      </h3>
+
+
+                      {/* Ingredients */}
+
+                      <p className="text-xs text-[#64748b] leading-relaxed mt-1 line-clamp-2">
+
+                        {dish.ingredients.join(
+                          ', '
+                        )}
+
+                      </p>
+
+
+                      {/* Prep Time */}
+
+                      <div className="flex items-center gap-1.5 mt-3 text-xs text-gray-500">
+
+                        <Clock
+                          size={13}
+                        />
+
+                        <span>
+                          {dish.avgPrepTimeMinutes}{' '}
+                          min preparation
+                        </span>
+
+                      </div>
 
                     </div>
 
                   </div>
 
+
+                  {/* =========================
+                      PRICE + CART
+                  ========================= */}
+
+                  <div className="px-1.5 pt-3 flex items-center justify-between border-t border-gray-50">
+
+
+                    {/* Price */}
+
+                    <span className="text-sm font-bold text-[#111827]">
+
+                      ₹{dish.price}
+
+                    </span>
+
+
+                    {/* Add Button */}
+
+                    <button
+                      onClick={() =>
+                        handleAdd(
+                          dish
+                        )
+                      }
+
+                      type="button"
+
+                      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-xs cursor-pointer ${
+                        isJustAdded
+                          ? 'bg-emerald-600 text-white scale-95'
+                          : 'bg-[#14805f] hover:bg-[#106d50] text-white'
+                      }`}
+                    >
+
+                      {isJustAdded ? (
+
+                        <>
+                          <Check
+                            size={14}
+                          />
+
+                          Added
+                        </>
+
+                      ) : (
+
+                        <>
+                          <Plus
+                            size={14}
+                          />
+
+                          Add to Cart
+                        </>
+
+                      )}
+
+                    </button>
+
+                  </div>
+
                 </div>
 
+              );
 
-                {/* =========================
-                    PRICE + ADD BUTTON
-                ========================= */}
-
-                <div className="px-1.5 pt-3 flex items-center justify-between border-t border-gray-50">
-
-
-                  {/* Price */}
-
-                  <span className="text-sm font-bold text-[#111827]">
-
-                    ₹{dish.price}
-
-                  </span>
-
-
-                  {/* Add Button */}
-
-                  <button
-                    onClick={() =>
-                      handleAdd(dish)
-                    }
-
-                    type="button"
-
-                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-xs cursor-pointer ${
-                      isJustAdded
-                        ? 'bg-emerald-600 text-white scale-95'
-                        : 'bg-[#14805f] hover:bg-[#106d50] text-white'
-                    }`}
-                  >
-
-                    {isJustAdded ? (
-
-                      <>
-                        <Check size={14} />
-                        Added
-                      </>
-
-                    ) : (
-
-                      <>
-                        <Plus size={14} />
-                        Add to Cart
-                      </>
-
-                    )}
-
-                  </button>
-
-                </div>
-
-              </div>
-
-            );
-
-          })}
+            }
+          )}
 
         </div>
 
@@ -461,6 +485,7 @@ const Menu = () => {
       {itemCount > 0 && (
 
         <div
+
           onClick={() =>
             navigate('/cart')
           }
@@ -472,7 +497,6 @@ const Menu = () => {
 
             <ShoppingBag
               size={16}
-              className="text-white"
             />
 
             <span>
@@ -495,7 +519,10 @@ const Menu = () => {
 
           <span className="text-[#34d399] font-bold">
 
-            ₹{totalAmount.toFixed(2)}
+            ₹
+            {totalAmount.toFixed(
+              2
+            )}
 
           </span>
 
