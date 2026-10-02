@@ -131,14 +131,13 @@ const Home = () => {
 
               <div className="flex items-center gap-5 shrink-0">
                 <span className="text-xs font-bold text-[#111827]">
-                  ${order.price.toFixed(2)}
+                  ₹{order.price.toFixed(2)}
                 </span>
                 <span
-                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-md ${
-                    order.status === 'Preparing'
+                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-md ${order.status === 'Preparing'
                       ? 'bg-[#fff7ed] text-[#ea580c]'
                       : 'bg-[#ecfdf5] text-[#059669]'
-                  }`}
+                    }`}
                 >
                   {order.status}
                 </span>

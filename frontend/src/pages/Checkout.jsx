@@ -66,7 +66,7 @@ const Checkout = () => {
                       </span>
                     </div>
                     <span className="font-semibold text-[#111827] shrink-0">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -77,13 +77,13 @@ const Checkout = () => {
                 <div className="flex items-center justify-between">
                   <span>Subtotal</span>
                   <span className="font-semibold text-[#111827]">
-                    ${subtotal.toFixed(2)}
+                    ₹{subtotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Service Fee</span>
                   <span className="font-semibold text-[#111827]">
-                    ${serviceFee.toFixed(2)}
+                    ₹{serviceFee.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -92,7 +92,7 @@ const Checkout = () => {
               <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
                 <span className="text-sm font-bold text-[#111827]">Total Amount</span>
                 <span className="text-xl font-extrabold text-[#14805f]">
-                  ${totalAmount.toFixed(2)}
+                  ₹{totalAmount.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -155,7 +155,7 @@ const Checkout = () => {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-[#111827]">Campus Card</p>
-                    <p className="text-[11px] text-[#64748b]">Balance: $45.10</p>
+                    <p className="text-[11px] text-[#64748b]">Balance: ₹45.10</p>
                   </div>
                 </div>
                 <span className="text-[11px] font-semibold text-[#14805f] bg-white px-2 py-0.5 rounded border border-[#bce4d4]">

@@ -11,6 +11,13 @@ import Orders from './pages/Orders';
 import Chatbot from './pages/Chatbot';
 import { CartProvider } from './context/CartContext';
 
+// Admin imports
+import AdminLayout from './components/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminMenu from './pages/admin/AdminMenu';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
+
 function App() {
   return (
     <CartProvider>
@@ -31,6 +38,14 @@ function App() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/chatbot" element={<Chatbot />} />
           </Route>
+
+          {/* Admin / Staff Dashboard Routes */}
+         <Route element={<AdminLayout />}>
+  <Route path="/admin-dashboard" element={<AdminDashboard />} />
+  <Route path="/admin-dashboard/orders" element={<AdminOrders />} />
+  <Route path="/admin-dashboard/menu" element={<AdminMenu />} />
+  <Route path="/admin-dashboard/analytics" element={<AdminAnalytics />} />
+</Route>
 
           {/* Catch-all redirect to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -45,7 +45,7 @@ const Chatbot = () => {
       const lower = query.toLowerCase();
 
       if (lower.includes('popular') || lower.includes('recommend') || lower.includes('best')) {
-        botResponse = "Today's campus top picks are the Teriyaki Chicken Bowl ($9.20) and the freshly baked Margherita Pizza ($8.50)! Both have 15-20 min prep times.";
+        botResponse = "Today's campus top picks are the Teriyaki Chicken Bowl (₹9.20) and the freshly baked Margherita Pizza (₹8.50)! Both have 15-20 min prep times.";
       } else if (lower.includes('vegetarian') || lower.includes('vegan') || lower.includes('veg')) {
         botResponse = "For vegetarian options, our Mozzarella Margherita Pizza, Grilled Cheese Sandwich, and crisp Caesar Salad (ask for no bacon) are student favorites!";
       } else if (lower.includes('hour') || lower.includes('time') || lower.includes('open')) {

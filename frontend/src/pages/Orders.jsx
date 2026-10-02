@@ -122,7 +122,7 @@ const Orders = () => {
                       {order.date}
                     </td>
                     <td className="py-4 font-bold text-[#111827]">
-                      ${order.total.toFixed(2)}
+                      ₹{order.total.toFixed(2)}
                     </td>
                     <td className="py-4">
                       {getStatusBadge(order.status)}
@@ -182,7 +182,7 @@ const Orders = () => {
                     {order.date}
                   </td>
                   <td className="py-4 font-bold text-[#111827]">
-                    ${order.total.toFixed(2)}
+                    ₹{order.total.toFixed(2)}
                   </td>
                   <td className="py-4">
                     {getStatusBadge(order.status)}

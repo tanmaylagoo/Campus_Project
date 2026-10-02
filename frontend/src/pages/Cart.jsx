@@ -116,7 +116,7 @@ const Cart = () => {
 
                     {/* Total for Item */}
                     <span className="text-xs font-bold text-[#111827] w-14 text-right">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </span>
 
                     {/* Trash Button */}
@@ -138,20 +138,20 @@ const Cart = () => {
               <div className="flex items-center justify-between text-xs text-[#64748b]">
                 <span>Subtotal</span>
                 <span className="font-semibold text-[#111827]">
-                  ${subtotal.toFixed(2)}
+                  ₹{subtotal.toFixed(2)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs text-[#64748b]">
                 <span>Service Fee</span>
                 <span className="font-semibold text-[#111827]">
-                  ${serviceFee.toFixed(2)}
+                  ₹{serviceFee.toFixed(2)}
                 </span>
               </div>
 
               <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
                 <span className="text-sm font-bold text-[#111827]">Total</span>
                 <span className="text-lg font-extrabold text-[#14805f]">
-                  ${totalAmount.toFixed(2)}
+                  ₹{totalAmount.toFixed(2)}
                 </span>
               </div>
 
