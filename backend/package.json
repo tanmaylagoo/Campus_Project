@@ -21,6 +21,7 @@
     "express-validator": "^7.3.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.8.0",
+    "nodemon": "^3.1.14",
     "socket.io": "^4.8.3",
     "zod": "^4.4.3",
     "zod-to-json-schema": "^3.25.2"

@@ -11,7 +11,7 @@ const menu = [
     ],
     price: 22,
     avgPrepTimeMinutes: 5,
-    image_url: "https://images.unsplash.com/photo-1626074964019-2244c5f86c85?auto=format&fit=crop&w=600&q=80"
+    image_url: "http://localhost:5000/imgs/vada_pav.JPG"
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ const menu = [
     ],
     price: 22,
     avgPrepTimeMinutes: 5,
-    image_url: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80"
+    image_url: "http://localhost:5000/imgs/samosa_pav.jpg"
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ const menu = [
     ],
     price: 68,
     avgPrepTimeMinutes: 10,
-    image_url: "https://images.unsplash.com/photo-1589301760014-d929f39ce9b0?auto=format&fit=crop&w=600&q=80"
+    image_url: "http://localhost:5000/imgs/masala_dosa.jpg"
   },
   {
     id: 4,
@@ -56,7 +56,7 @@ const menu = [
     ],
     price: 47,
     avgPrepTimeMinutes: 8,
-    image_url: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=600&q=80"
+    image_url: "http://localhost:5000/imgs/sada_dosa.jpg"
   },
   {
     id: 5,
@@ -74,24 +74,7 @@ const menu = [
     ],
     price: 79,
     avgPrepTimeMinutes: 10,
-    image_url: "https://images.unsplash.com/photo-1630383249896-424e482df921?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 6,
-    name: "Veg Sandwich",
-    category: "Sandwiches",
-    ingredients: [
-      "bread",
-      "onion",
-      "tomato",
-      "cucumber",
-      "capsicum",
-      "butter",
-      "green chutney"
-    ],
-    price: 45,
-    avgPrepTimeMinutes: 7,
-    image_url: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80"
+    image_url: "http://localhost:5000/imgs/masala_utttapa.jpg"
   },
   {
     id: 7,
@@ -109,7 +92,105 @@ const menu = [
     ],
     price: 55,
     avgPrepTimeMinutes: 8,
-    image_url: "https://images.unsplash.com/photo-1553909489-cd47ce5634e7?auto=format&fit=crop&w=600&q=80"
+    image_url: "http://localhost:5000/imgs/cheese_sandwich.jpg"
+  },
+  {
+    id: 9,
+    name: "Veg Fried Rice",
+    category: "Rice",
+    ingredients: [
+      "rice",
+      "cabbage",
+      "carrot",
+      "capsicum",
+      "spring onion",
+      "soy sauce",
+      "spices",
+      "oil"
+    ],
+    price: 100,
+    avgPrepTimeMinutes: 12,
+    image_url: "http://localhost:5000/imgs/veg_fried_rice.jpg"
+  },
+  {
+    id: 10,
+    name: "Schezwan Rice",
+    category: "Rice",
+    ingredients: [
+      "rice",
+      "cabbage",
+      "carrot",
+      "capsicum",
+      "spring onion",
+      "schezwan sauce",
+      "soy sauce",
+      "spices"
+    ],
+    price: 105,
+    avgPrepTimeMinutes: 12,
+    image_url: "http://localhost:5000/imgs/veg_schezwan_rice.jpg"
+  },
+  {
+    id: 11,
+    name: "Hakka Noodles",
+    category: "Noodles",
+    ingredients: [
+      "noodles",
+      "cabbage",
+      "carrot",
+      "capsicum",
+      "spring onion",
+      "soy sauce",
+      "spices",
+      "oil"
+    ],
+    price: 97,
+    avgPrepTimeMinutes: 12,
+    image_url: "http://localhost:5000/imgs/hakka_noodles.jpg"
+  },
+  {
+    id: 13,
+    name: "Veg Manchurian",
+    category: "Gravy",
+    ingredients: [
+      "cabbage",
+      "carrot",
+      "capsicum",
+      "corn flour",
+      "garlic",
+      "soy sauce",
+      "manchurian sauce",
+      "spices"
+    ],
+    price: 74,
+    avgPrepTimeMinutes: 12,
+    image_url: "http://localhost:5000/imgs/veg_manchurian.jpg"
+  }
+];
+
+module.exports = menu;
+
+/*
+============================================================
+Items with Unsplash images (Commented out):
+============================================================
+
+  {
+    id: 6,
+    name: "Veg Sandwich",
+    category: "Sandwiches",
+    ingredients: [
+      "bread",
+      "onion",
+      "tomato",
+      "cucumber",
+      "capsicum",
+      "butter",
+      "green chutney"
+    ],
+    price: 45,
+    avgPrepTimeMinutes: 7,
+    image_url: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80"
   },
   {
     id: 8,
@@ -129,60 +210,6 @@ const menu = [
     image_url: "https://images.unsplash.com/photo-1528736235302-52922df5c122?auto=format&fit=crop&w=600&q=80"
   },
   {
-    id: 9,
-    name: "Veg Fried Rice",
-    category: "Rice",
-    ingredients: [
-      "rice",
-      "cabbage",
-      "carrot",
-      "capsicum",
-      "spring onion",
-      "soy sauce",
-      "spices",
-      "oil"
-    ],
-    price: 100,
-    avgPrepTimeMinutes: 12,
-    image_url: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 10,
-    name: "Schezwan Rice",
-    category: "Rice",
-    ingredients: [
-      "rice",
-      "cabbage",
-      "carrot",
-      "capsicum",
-      "spring onion",
-      "schezwan sauce",
-      "soy sauce",
-      "spices"
-    ],
-    price: 105,
-    avgPrepTimeMinutes: 12,
-    image_url: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 11,
-    name: "Hakka Noodles",
-    category: "Noodles",
-    ingredients: [
-      "noodles",
-      "cabbage",
-      "carrot",
-      "capsicum",
-      "spring onion",
-      "soy sauce",
-      "spices",
-      "oil"
-    ],
-    price: 97,
-    avgPrepTimeMinutes: 12,
-    image_url: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80"
-  },
-  {
     id: 12,
     name: "Manchow Noodles",
     category: "Noodles",
@@ -197,24 +224,6 @@ const menu = [
     price: 105,
     avgPrepTimeMinutes: 13,
     image_url: "https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 13,
-    name: "Veg Manchurian",
-    category: "Gravy",
-    ingredients: [
-      "cabbage",
-      "carrot",
-      "capsicum",
-      "corn flour",
-      "garlic",
-      "soy sauce",
-      "manchurian sauce",
-      "spices"
-    ],
-    price: 74,
-    avgPrepTimeMinutes: 12,
-    image_url: "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=600&q=80"
   },
   {
     id: 14,
@@ -339,6 +348,4 @@ const menu = [
     avgPrepTimeMinutes: 6,
     image_url: "https://images.unsplash.com/photo-1626132647523-66f5bf380027?auto=format&fit=crop&w=600&q=80"
   }
-];
-
-module.exports = menu;
+*/

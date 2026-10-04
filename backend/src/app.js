@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
+const path = require('path');
+
 const authRoutes = require('./routes/auth.routes.js'); 
 
 const app = express();
@@ -18,6 +20,9 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(cookieParser());
+
+// Serve static images
+app.use('/imgs', express.static(path.join(__dirname, 'imgs')));
 
 // Health Check
 app.get('/api/health', (req, res) => {
