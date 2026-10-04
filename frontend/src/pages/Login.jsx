@@ -28,15 +28,32 @@ const Login = () => {
         withCredentials: true 
       });
 
-      // 1. Save Token and User Data to localStorage 
-      // (Even though cookies are used, keeping it here helps frontend routing checks)
-      if(response.data.token) {
-         localStorage.setItem("token", response.data.token);
-      }
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      const userData = response.data.user;
+      const userToken = response.data.token;
 
-      // 2. Redirect based on backend 'role'
-      if (response.data.user.role === "admin") {
+      // 1. Session Storage (tab-isolated parallel sessions)
+      if (userToken) {
+        sessionStorage.setItem("token", userToken);
+      }
+      sessionStorage.setItem("user", JSON.stringify(userData));
+
+      // 2. Role-specific LocalStorage
+      if (userData.role === "admin") {
+        if (userToken) localStorage.setItem("admin_token", userToken);
+        localStorage.setItem("admin_user", JSON.stringify(userData));
+      } else {
+        if (userToken) localStorage.setItem("customer_token", userToken);
+        localStorage.setItem("customer_user", JSON.stringify(userData));
+      }
+
+      // 3. General LocalStorage (for general app compatibility)
+      if (userToken) {
+        localStorage.setItem("token", userToken);
+      }
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      // 4. Redirect based on backend 'role'
+      if (userData.role === "admin") {
         navigate("/admin-dashboard"); 
       } else {
         navigate("/menu"); 

@@ -11,18 +11,74 @@ import {
   X,
 } from 'lucide-react';
 
+import axios from 'axios';
+
 const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const adminName = 'Admin Name';
-  const adminEmail = 'admin@email.com';
+  const storedUser = (() => {
+    try {
+      // 1. Prefer current tab's sessionStorage if it's admin
+      const s = sessionStorage.getItem('user');
+      if (s) {
+        const parsed = JSON.parse(s);
+        if (parsed?.role === 'admin') return parsed;
+      }
+      // 2. Check dedicated admin_user in localStorage
+      const a = localStorage.getItem('admin_user');
+      if (a) return JSON.parse(a);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+      // 3. Fallback to localStorage.user only if role is admin
+      const u = localStorage.getItem('user');
+      if (u) {
+        const parsed = JSON.parse(u);
+        if (parsed?.role === 'admin') return parsed;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const adminName = storedUser?.username || storedUser?.name || 'Admin';
+  const adminEmail = storedUser?.email || 'admin@email.com';
+  const avatarLetter = (adminName[0] || 'A').toUpperCase();
+
+  const handleLogout = async () => {
+    console.log('Logout button clicked');
+
+    try {
+      console.log('Calling backend logout...');
+      const token =
+        sessionStorage.getItem('token') ||
+        localStorage.getItem('admin_token') ||
+        localStorage.getItem('token');
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+
+      console.log('Backend logout successful:', response.data);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      console.error('Status:', error.response?.status);
+      console.error('Response:', error.response?.data);
+    } finally {
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+    }
   };
 
   const navLinks = [
@@ -89,7 +145,7 @@ const AdminSidebar = () => {
 
         <div className="flex items-center gap-3 px-2 py-2 rounded-xl bg-white/5 border border-white/5">
           <div className="w-9 h-9 rounded-full bg-[#14805f] flex items-center justify-center text-white text-xs font-bold shrink-0">
-            A
+            {avatarLetter}
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-white truncate leading-tight">{adminName}</p>

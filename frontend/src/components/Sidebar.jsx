@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Utensils, Home, ShoppingBag, UtensilsCrossed, MessageSquare, LogOut } from 'lucide-react';
+import axios from 'axios';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -8,20 +9,65 @@ const Sidebar = () => {
   // Retrieve user or fallback to mockup user
   const storedUser = (() => {
     try {
+      // 1. Prefer current tab's sessionStorage if it's customer
+      const s = sessionStorage.getItem('user');
+      if (s) {
+        const parsed = JSON.parse(s);
+        if (parsed?.role !== 'admin') return parsed;
+      }
+      // 2. Check dedicated customer_user in localStorage
+      const c = localStorage.getItem('customer_user');
+      if (c) return JSON.parse(c);
+
+      // 3. Fallback to localStorage.user only if role is not admin
       const u = localStorage.getItem('user');
-      return u ? JSON.parse(u) : null;
+      if (u) {
+        const parsed = JSON.parse(u);
+        if (parsed?.role !== 'admin') return parsed;
+      }
+      return null;
     } catch {
       return null;
     }
   })();
 
-  const userName = storedUser?.name || storedUser?.fullName || 'Alex Mercer';
-  const userEmail = storedUser?.email || 'alex.m@university.edu';
+  const userName = storedUser?.username || storedUser?.name || storedUser?.fullName || 'User';
+  const userEmail = storedUser?.email || '';
+  const avatarLetter = (userName[0] || 'U').toUpperCase();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+  const handleLogout = async () => {
+    console.log('Customer logout button clicked');
+
+    try {
+      console.log('Calling backend logout...');
+      const token =
+        sessionStorage.getItem('token') ||
+        localStorage.getItem('customer_token') ||
+        localStorage.getItem('token');
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+
+      console.log('Backend logout successful:', response.data);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      console.error('Status:', error.response?.status);
+      console.error('Response:', error.response?.data);
+    } finally {
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      localStorage.removeItem('customer_token');
+      localStorage.removeItem('customer_user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+    }
   };
 
   const navLinks = [
@@ -85,11 +131,17 @@ const Sidebar = () => {
         </button>
 
         <div className="flex items-center gap-3 px-2 py-2 rounded-xl bg-white/5 border border-white/5">
-          <img
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80"
-            alt={userName}
-            className="w-9 h-9 rounded-full object-cover ring-1 ring-white/20 shrink-0"
-          />
+          {storedUser?.avatar || storedUser?.image ? (
+            <img
+              src={storedUser.avatar || storedUser.image}
+              alt={userName}
+              className="w-9 h-9 rounded-full object-cover ring-1 ring-white/20 shrink-0"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-[#14805f] flex items-center justify-center text-white text-xs font-bold shrink-0">
+              {avatarLetter}
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-white truncate leading-tight">{userName}</p>
             <p className="text-[11px] text-[#94a3b8] truncate leading-tight mt-0.5">{userEmail}</p>
