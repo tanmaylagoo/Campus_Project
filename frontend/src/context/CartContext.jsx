@@ -34,6 +34,11 @@ const getStoredCustomer = () => {
 };
 
 export const CartProvider = ({ children }) => {
+  // Clear any legacy cross-account order id leakage from localStorage
+  useEffect(() => {
+    localStorage.removeItem('canteen_my_order_ids');
+  }, []);
+
   // =========================
   // MENU
   // =========================
@@ -127,7 +132,7 @@ export const CartProvider = ({ children }) => {
   };
 
   // =========================
-  // ORDERS (Backend Integrated)
+  // ORDERS (Backend Integrated - Customer Isolated)
   // =========================
   const [currentOrders, setCurrentOrders] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
@@ -135,44 +140,21 @@ export const CartProvider = ({ children }) => {
   const [activeReadyAlert, setActiveReadyAlert] = useState(null);
   const alertedOrderIdsRef = useRef(new Set());
 
-  // Helper to get stored list of customer's placed order numbers
-  const getMyOrderIds = () => {
-    try {
-      const saved = localStorage.getItem('canteen_my_order_ids');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  };
-
-  const addMyOrderId = (orderNumber) => {
-    try {
-      const existing = getMyOrderIds();
-      if (!existing.includes(orderNumber)) {
-        const updated = [orderNumber, ...existing];
-        localStorage.setItem('canteen_my_order_ids', JSON.stringify(updated));
-      }
-    } catch (err) {
-      console.error('Error saving order id:', err);
-    }
-  };
-
-  // Fetch orders from backend
+  // Fetch orders from backend strictly for the authenticated user
   const fetchMyOrders = useCallback(async () => {
     try {
       const token = getAuthToken();
-      if (!token) return;
+      if (!token) {
+        setCurrentOrders([]);
+        setOrderHistory([]);
+        return;
+      }
       const customer = getStoredCustomer();
-      const orderIds = getMyOrderIds();
 
-      const params = new URLSearchParams();
-      if (customer?.email) params.append('email', customer.email);
-      if (orderIds.length > 0) params.append('orderIds', orderIds.join(','));
-
-      const response = await fetch(`${API_URL}/orders/my-orders?${params.toString()}`, {
+      const response = await fetch(`${API_URL}/orders/my-orders`, {
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
         credentials: 'include',
       });
@@ -198,7 +180,7 @@ export const CartProvider = ({ children }) => {
         }
       }
     } catch (err) {
-      console.error('Error fetching orders:', err);
+      console.error('Error fetching customer orders:', err);
     }
   }, []);
 
@@ -209,7 +191,7 @@ export const CartProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [fetchMyOrders]);
 
-  // Place Order (Backend Checkout + Payment Simulation)
+  // Place Order (Backend Checkout)
   const placeOrder = async (details = {}) => {
     if (cartItems.length === 0) return null;
 
@@ -250,7 +232,6 @@ export const CartProvider = ({ children }) => {
       }
 
       const created = data.order;
-      addMyOrderId(created.orderNumber || created.id);
       setCurrentOrders((prev) => [created, ...prev]);
       clearCart();
       fetchMyOrders();
@@ -265,7 +246,6 @@ export const CartProvider = ({ children }) => {
   // Called after successful external verification (e.g. Razorpay Online Payment)
   const onOrderCompleted = (created) => {
     if (!created) return;
-    addMyOrderId(created.orderNumber || created.id);
     setCurrentOrders((prev) => [created, ...prev.filter((o) => (o.orderNumber || o.id) !== (created.orderNumber || created.id))]);
     clearCart();
     fetchMyOrders();

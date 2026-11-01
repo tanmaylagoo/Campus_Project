@@ -165,17 +165,15 @@ const createOrder = async (req, res) => {
         const randomSuffix = Math.floor(100 + Math.random() * 900);
         const orderNumber = `CH-${1000 + orderCount + 1}`;
 
-        // Customer details priority: authenticated user > req.body > default
+        // Customer details: Authenticated user takes strict priority over req.body
         const user = req.user || null;
         const finalCustomerName =
-            customerName ||
             user?.username ||
             user?.name ||
+            customerName ||
             'Campus Student';
         const finalCustomerEmail =
-            customerEmail ||
-            user?.email ||
-            'student@campus.edu';
+            user?.email ? user.email.toLowerCase().trim() : (customerEmail || 'student@campus.edu');
 
         // Calculate estimated meal prep completion time
         const now = new Date();
@@ -216,30 +214,25 @@ const createOrder = async (req, res) => {
     }
 };
 
-// GET /api/orders/my-orders — Fetch active orders and history for current customer
+// GET /api/orders/my-orders — Fetch active orders and history for strictly the logged-in customer
 const getMyOrders = async (req, res) => {
     try {
         await checkAndAdvanceOrders();
 
-        const queryOr = [];
-        if (req.user?._id) {
-            queryOr.push({ user: req.user._id });
-        }
-        if (req.user?.email) {
-            queryOr.push({ customerEmail: req.user.email });
-        }
-        if (req.query.email) {
-            queryOr.push({ customerEmail: req.query.email });
-        }
-        if (req.query.orderIds) {
-            const ids = req.query.orderIds.split(',').map((s) => s.trim()).filter(Boolean);
-            if (ids.length > 0) {
-                queryOr.push({ orderNumber: { $in: ids } });
-            }
+        if (!req.user) {
+            return res.status(401).json({ success: false, message: 'Not authorized' });
         }
 
-        // If no user identifier at all, query recent orders or return empty
-        const filter = queryOr.length > 0 ? { $or: queryOr } : {};
+        // Strictly isolate orders to the authenticated customer
+        const queryOr = [];
+        if (req.user._id) {
+            queryOr.push({ user: req.user._id });
+        }
+        if (req.user.email) {
+            queryOr.push({ customerEmail: req.user.email.toLowerCase().trim() });
+        }
+
+        const filter = queryOr.length > 0 ? { $or: queryOr } : { _id: null };
 
         const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(50);
 
@@ -264,7 +257,7 @@ const getMyOrders = async (req, res) => {
     }
 };
 
-// GET /api/orders/:id — Track specific order live
+// GET /api/orders/:id — Track specific order live (with customer ownership check)
 const getOrderById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -279,6 +272,18 @@ const getOrderById = async (req, res) => {
 
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Customer access control: customers can only view their own order
+        if (
+            req.user &&
+            req.user.role !== 'admin' &&
+            order.user &&
+            order.user.toString() !== req.user._id.toString() &&
+            order.customerEmail &&
+            order.customerEmail.toLowerCase() !== req.user.email.toLowerCase()
+        ) {
+            return res.status(403).json({ success: false, message: 'Access denied: You do not own this order' });
         }
 
         // Auto-advance if prep time has elapsed and still in kitchen
@@ -484,4 +489,3 @@ module.exports = {
     dismissReadyAlert,
     formatOrderForClient,
 };
-

@@ -66,6 +66,8 @@ const Sidebar = () => {
       localStorage.removeItem('customer_user');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('canteen_my_order_ids');
+      localStorage.removeItem('canteen_cart');
       navigate('/login');
     }
   };

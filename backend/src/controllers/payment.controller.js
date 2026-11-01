@@ -129,14 +129,12 @@ const createRazorpayOrder = async (req, res) => {
 
         const user = req.user || null;
         const finalCustomerName =
-            customerName ||
             user?.username ||
             user?.name ||
+            customerName ||
             'Campus Student';
         const finalCustomerEmail =
-            customerEmail ||
-            user?.email ||
-            'student@campus.edu';
+            user?.email ? user.email.toLowerCase().trim() : (customerEmail || 'student@campus.edu');
 
         const itemsSummary = validatedItems
             .map((i) => `${i.quantity > 1 ? `${i.quantity}x ` : ''}${i.name}`)
