@@ -380,7 +380,7 @@ const getAllOrders = async (req, res) => {
         res.status(200).json({
             success: true,
             stats,
-            todayOrdersCount: todayOrders.length,
+            todayOrdersCount: statsOrders.length,
             orders: orders.map(formatOrderForClient),
         });
     } catch (error) {
