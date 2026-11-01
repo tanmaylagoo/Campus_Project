@@ -85,7 +85,7 @@ const AdminSidebar = () => {
     { name: 'Dashboard', path: '/admin-dashboard', icon: LayoutDashboard },
     { name: 'Orders', path: '/admin-dashboard/orders', icon: ClipboardList },
     { name: 'Menu', path: '/admin-dashboard/menu', icon: UtensilsCrossed },
-    { name: 'Analytics', path: '/admin-dashboard/analytics', icon: BarChart3 },
+    { name: 'Daily Sales', path: '/admin-dashboard/analytics', icon: BarChart3 },
   ];
 
   const isActiveLink = (path) => {

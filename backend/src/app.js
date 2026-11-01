@@ -1,13 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-
 const path = require('path');
 
 const authRoutes = require('./routes/auth.routes.js'); 
+const menuRouter = require('./routes/menuRouter');
+const orderRoutes = require('./routes/order.routes');
+const salesRoutes = require('./routes/sales.routes');
+const chatbotRoutes = require('./routes/chatbot.routes');
+const paymentRoutes = require('./routes/payment.routes');
 
 const app = express();
-const menuRouter = require('./routes/menuRouter');
 
 app.use(
     cors({
@@ -32,10 +35,12 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-
 app.use('/api/auth', authRoutes);
-
 app.use('/api/menu', menuRouter);
+app.use('/api/orders', orderRoutes);
+app.use('/api/sales', salesRoutes);
+app.use('/api/chat', chatbotRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // 404 Handler
 app.use((req, res) => {
@@ -44,9 +49,5 @@ app.use((req, res) => {
         message: 'API route not found'
     });
 });
-
-
-
-
 
 module.exports = app;

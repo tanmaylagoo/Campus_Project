@@ -10,6 +10,8 @@ import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import Chatbot from './pages/Chatbot';
 import { CartProvider } from './context/CartContext';
+import ReadyAlertModal from './components/ReadyAlertModal';
+import { ProtectedRoute, PublicOnlyRoute } from './components/ProtectedRoute';
 
 // Admin imports
 import AdminLayout from './components/AdminLayout';
@@ -22,32 +24,43 @@ function App() {
   return (
     <CartProvider>
       <Router>
-        <Routes>
-          {/* Public Authentication & Landing Routes */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+        {/* Global Meal Ready Alert Popup */}
+        <ReadyAlertModal />
 
-          {/* Authenticated Dashboard Shell Routes */}
-          <Route element={<DashboardLayout />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/dashboard" element={<Navigate to="/home" replace />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/chatbot" element={<Chatbot />} />
+        <Routes>
+          {/* Public Landing Route */}
+          <Route path="/" element={<Landing />} />
+
+          {/* Guest-only Auth Routes (redirects logged-in users to their dashboard) */}
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
           </Route>
 
-          {/* Admin / Staff Dashboard Routes */}
-         <Route element={<AdminLayout />}>
-  <Route path="/admin-dashboard" element={<AdminDashboard />} />
-  <Route path="/admin-dashboard/orders" element={<AdminOrders />} />
-  <Route path="/admin-dashboard/menu" element={<AdminMenu />} />
-  <Route path="/admin-dashboard/analytics" element={<AdminAnalytics />} />
-</Route>
+          {/* Protected Customer Routes (Requires Login; allows customer & admin) */}
+          <Route element={<ProtectedRoute allowedRoles={['customer', 'admin']} />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/dashboard" element={<Navigate to="/home" replace />} />
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/chatbot" element={<Chatbot />} />
+            </Route>
+          </Route>
 
-          {/* Catch-all redirect to Home */}
+          {/* Protected Admin Routes (Requires Login + 'admin' role) */}
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              <Route path="/admin-dashboard/orders" element={<AdminOrders />} />
+              <Route path="/admin-dashboard/menu" element={<AdminMenu />} />
+              <Route path="/admin-dashboard/analytics" element={<AdminAnalytics />} />
+            </Route>
+          </Route>
+
+          {/* Catch-all redirect to Landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

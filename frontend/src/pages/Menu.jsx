@@ -89,12 +89,13 @@ const Menu = () => {
           .toLowerCase()
           .includes(search) ||
 
-        item.ingredients.some(
-          (ingredient) =>
-            ingredient
-              .toLowerCase()
-              .includes(search)
-        );
+        (Array.isArray(item.ingredients) &&
+          item.ingredients.some(
+            (ingredient) =>
+              ingredient
+                .toLowerCase()
+                .includes(search)
+          ));
 
 
       return (
@@ -315,6 +316,7 @@ const Menu = () => {
               const isJustAdded =
                 addedAnimationId ===
                 dish.id;
+              const isAvailable = dish.isAvailable !== false;
 
 
               return (
@@ -322,48 +324,64 @@ const Menu = () => {
                 <div
                   key={dish.id}
 
-                  className="bg-white rounded-2xl border border-gray-100/90 p-3 flex flex-col justify-between shadow-xs hover:shadow-md transition-all group"
+                  className={`bg-white rounded-2xl border border-gray-100/90 p-3 flex flex-col justify-between shadow-xs hover:shadow-md transition-all group ${
+                    !isAvailable ? 'opacity-75' : ''
+                  }`}
                 >
 
                   {/* =========================
-                      IMAGE
+                      IMAGE (only displayed if available)
                   ========================= */}
 
                   <div>
 
-                    <div className="overflow-hidden rounded-xl h-44 bg-gray-100 relative">
+                    {dish.image_url && (
+                      <div className="overflow-hidden rounded-xl h-44 bg-gray-100 relative mb-2">
 
-                      <img
-                        src={dish.image_url}
-                        alt={dish.name}
+                        <img
+                          src={dish.image_url}
+                          alt={dish.name}
 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+                            !isAvailable ? 'grayscale' : ''
+                          }`}
 
-                        loading="lazy"
+                          loading="lazy"
 
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            'https://placehold.co/600x400?text=Food';
-                        }}
-                      />
+                          onError={(e) => {
+                            e.currentTarget.parentElement.style.display = 'none';
+                          }}
+                        />
+                        {!isAvailable && (
+                          <span className="absolute top-2.5 right-2.5 bg-red-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
+                            Out of Stock
+                          </span>
+                        )}
 
-                    </div>
+                      </div>
+                    )}
 
 
                     {/* =========================
                         DETAILS
                     ========================= */}
 
-                    <div className="px-1.5 pt-3.5 pb-2">
+                    <div className="px-1.5 pt-2 pb-2">
 
 
-                      {/* Category */}
+                      {/* Category & Availability Tag */}
 
-                      <span className="inline-block text-[10px] font-semibold text-[#14805f] bg-emerald-50 px-2 py-1 rounded-md mb-2">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <span className="inline-block text-[10px] font-semibold text-[#14805f] bg-emerald-50 px-2 py-1 rounded-md">
+                          {dish.category}
+                        </span>
 
-                        {dish.category}
-
-                      </span>
+                        {!isAvailable && !dish.image_url && (
+                          <span className="inline-block text-[10px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md">
+                            Out of Stock
+                          </span>
+                        )}
+                      </div>
 
 
                       {/* Name */}
@@ -377,13 +395,15 @@ const Menu = () => {
 
                       {/* Ingredients */}
 
-                      <p className="text-xs text-[#64748b] leading-relaxed mt-1 line-clamp-2">
+                      {Array.isArray(dish.ingredients) && dish.ingredients.length > 0 && (
+                        <p className="text-xs text-[#64748b] leading-relaxed mt-1 line-clamp-2">
 
-                        {dish.ingredients.join(
-                          ', '
-                        )}
+                          {dish.ingredients.join(
+                            ', '
+                          )}
 
-                      </p>
+                        </p>
+                      )}
 
 
                       {/* Prep Time */}
@@ -395,7 +415,7 @@ const Menu = () => {
                         />
 
                         <span>
-                          {dish.avgPrepTimeMinutes}{' '}
+                          {dish.avgPrepTimeMinutes || 10}{' '}
                           min preparation
                         </span>
 
@@ -426,21 +446,24 @@ const Menu = () => {
 
                     <button
                       onClick={() =>
-                        handleAdd(
-                          dish
-                        )
+                        isAvailable && handleAdd(dish)
                       }
+                      disabled={!isAvailable}
 
                       type="button"
 
-                      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-xs cursor-pointer ${
-                        isJustAdded
-                          ? 'bg-emerald-600 text-white scale-95'
-                          : 'bg-[#14805f] hover:bg-[#106d50] text-white'
+                      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-xs ${
+                        !isAvailable
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          : isJustAdded
+                          ? 'bg-emerald-600 text-white scale-95 cursor-pointer'
+                          : 'bg-[#14805f] hover:bg-[#106d50] text-white cursor-pointer'
                       }`}
                     >
 
-                      {isJustAdded ? (
+                      {!isAvailable ? (
+                        <span>Unavailable</span>
+                      ) : isJustAdded ? (
 
                         <>
                           <Check

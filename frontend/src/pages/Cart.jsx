@@ -71,66 +71,74 @@ const Cart = () => {
 
             {/* Items List */}
             <div className="divide-y divide-gray-100">
-              {cartItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="py-5 flex items-center justify-between gap-4"
-                >
-                  <div className="flex items-center gap-4 min-w-0">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-14 h-14 rounded-xl object-cover shrink-0 border border-gray-100"
-                    />
-                    <div className="min-w-0">
-                      <h3 className="text-xs font-bold text-[#111827] truncate">
-                        {item.name}
-                      </h3>
-                      <p className="text-[11px] text-[#64748b] mt-0.5">
-                        {item.category} {item.quantity > 1 ? `(Qty ${item.quantity})` : ''}
-                      </p>
+              {cartItems.map((item) => {
+                const itemImg = item.image_url || item.imageUrl || item.image;
+                return (
+                  <div
+                    key={item.id}
+                    className="py-5 flex items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      {itemImg && (
+                        <img
+                          src={itemImg}
+                          alt={item.name}
+                          className="w-14 h-14 rounded-xl object-cover shrink-0 border border-gray-100"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      )}
+                      <div className="min-w-0">
+                        <h3 className="text-xs font-bold text-[#111827] truncate">
+                          {item.name}
+                        </h3>
+                        <p className="text-[11px] text-[#64748b] mt-0.5">
+                          {item.category} {item.quantity > 1 ? `(Qty ${item.quantity})` : ''}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-4 sm:gap-6 shrink-0">
-                    {/* Stepper */}
-                    <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-xs">
-                      <button
-                        onClick={() => updateQuantity(item.id, -1)}
-                        type="button"
-                        className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
-                      >
-                        <Minus size={12} />
-                      </button>
-                      <span className="w-8 text-center text-xs font-bold text-gray-800">
-                        {item.quantity}
+                    <div className="flex items-center gap-4 sm:gap-6 shrink-0">
+                      {/* Stepper */}
+                      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-xs">
+                        <button
+                          onClick={() => updateQuantity(item.id, -1)}
+                          type="button"
+                          className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span className="w-8 text-center text-xs font-bold text-gray-800">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.id, 1)}
+                          type="button"
+                          className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
+                        >
+                          <Plus size={12} />
+                        </button>
+                      </div>
+
+                      {/* Total for Item */}
+                      <span className="text-xs font-bold text-[#111827] w-14 text-right">
+                        ₹{(item.price * item.quantity).toFixed(2)}
                       </span>
+
+                      {/* Trash Button */}
                       <button
-                        onClick={() => updateQuantity(item.id, 1)}
+                        onClick={() => removeFromCart(item.id)}
                         type="button"
-                        className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
+                        className="text-[#f87171] hover:text-red-600 transition-colors p-1 cursor-pointer"
+                        title="Remove item"
                       >
-                        <Plus size={12} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
-
-                    {/* Total for Item */}
-                    <span className="text-xs font-bold text-[#111827] w-14 text-right">
-                      ₹{(item.price * item.quantity).toFixed(2)}
-                    </span>
-
-                    {/* Trash Button */}
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      type="button"
-                      className="text-[#f87171] hover:text-red-600 transition-colors p-1 cursor-pointer"
-                      title="Remove item"
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Calculations and Actions */}

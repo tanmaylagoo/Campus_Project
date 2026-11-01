@@ -2,25 +2,30 @@ const express = require('express');
 const router = express.Router();
 const {
     getAllItems,
+    getItemById,
     addItem,
     deleteItem,
     toggleAvailability,
     updateItem,
 } = require('../controllers/menu.controller');
+const { protect, authorize } = require('../middleware/auth.middleware');
 
-// Public — fetch all menu items
-router.get('/', getAllItems);
+// Authenticated users — fetch all menu items
+router.get('/', protect, getAllItems);
 
-// Admin — add a new item
-router.post('/', addItem);
+// Authenticated users — fetch a single menu item by id
+router.get('/:id', protect, getItemById);
 
-// Admin — update an item
-router.put('/:id', updateItem);
+// Admin only — add a new item
+router.post('/', protect, authorize('admin'), addItem);
 
-// Admin — toggle availability
-router.patch('/:id/availability', toggleAvailability);
+// Admin only — update an item
+router.put('/:id', protect, authorize('admin'), updateItem);
 
-// Admin — delete an item
-router.delete('/:id', deleteItem);
+// Admin only — toggle availability
+router.patch('/:id/availability', protect, authorize('admin'), toggleAvailability);
+
+// Admin only — delete an item
+router.delete('/:id', protect, authorize('admin'), deleteItem);
 
 module.exports = router;

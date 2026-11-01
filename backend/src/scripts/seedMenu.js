@@ -28,7 +28,6 @@ const seed = async () => {
             price: item.price,
             avgPrepTimeMinutes: item.avgPrepTimeMinutes,
             isAvailable: true,
-            imageUrl: item.image_url,
         }));
 
         await FoodItem.insertMany(docs);
