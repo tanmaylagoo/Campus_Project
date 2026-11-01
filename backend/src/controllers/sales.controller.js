@@ -2,21 +2,33 @@ const mongoose = require('mongoose');
 const Order = require('../models/order.model');
 const DailySales = require('../models/dailySales.model');
 
-// Helper to get YYYY-MM-DD in local time
+// Helper to get YYYY-MM-DD in Asia/Kolkata (Indian Standard Time)
 const formatDateStr = (date = new Date()) => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return new Date(date).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 };
 
-// Helper to get start and end Date objects for a YYYY-MM-DD string
+// Helper to get start and end UTC Date objects for a YYYY-MM-DD string in Asia/Kolkata (+05:30)
 const getDateBounds = (dateStr) => {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    const start = new Date(year, month - 1, day, 0, 0, 0, 0);
-    const end = new Date(year, month - 1, day, 23, 59, 59, 999);
-    return { start, end };
+    let target = dateStr;
+    if (!target || target === 'today') {
+        target = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+    } else if (target === 'yesterday') {
+        const d = new Date();
+        const localNow = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        localNow.setDate(localNow.getDate() - 1);
+        const y = localNow.getFullYear();
+        const m = String(localNow.getMonth() + 1).padStart(2, '0');
+        const day = String(localNow.getDate()).padStart(2, '0');
+        target = `${y}-${m}-${day}`;
+    }
+
+    const [y, m, d] = target.split('-').map(Number);
+    const pad = (n) => String(n).padStart(2, '0');
+    const dateFormatted = `${y}-${pad(m)}-${pad(d)}`;
+
+    const start = new Date(`${dateFormatted}T00:00:00.000+05:30`);
+    const end = new Date(`${dateFormatted}T23:59:59.999+05:30`);
+    return { dateStr: dateFormatted, start, end };
 };
 
 // Synchronize / aggregate Order documents into a DailySales record for a specific date
@@ -346,6 +358,7 @@ const getSalesByDate = async (req, res) => {
 
 module.exports = {
     formatDateStr,
+    getDateBounds,
     syncDailySalesForDate,
     getTodaySales,
     getSalesHistory,

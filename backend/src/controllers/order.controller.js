@@ -1,7 +1,7 @@
 const Order = require('../models/order.model');
 const FoodItem = require('../models/foodItem.model');
 const mongoose = require('mongoose');
-const { syncDailySalesForDate, formatDateStr } = require('./sales.controller');
+const { syncDailySalesForDate, formatDateStr, getDateBounds } = require('./sales.controller');
 
 // Helper to check if any active order has passed its estimatedReadyTime, and mark it READY
 const checkAndAdvanceOrders = async (filter = {}) => {
@@ -66,6 +66,7 @@ const formatOrderForClient = (order) => {
         avgPrepTimeMinutes: order.avgPrepTimeMinutes,
         createdAt: order.createdAt,
         date: new Date(order.createdAt).toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
@@ -327,26 +328,18 @@ const getAllOrders = async (req, res) => {
             ];
         }
 
-        // Date bounds for today (strictly resets at 00:00:00 midnight)
-        const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0);
-        const endOfToday = new Date();
-        endOfToday.setHours(23, 59, 59, 999);
+        // Date bounds in Asia/Kolkata (Indian Standard Time)
+        const todayBounds = getDateBounds('today');
 
-        // Optional date filter
-        if (date === 'today' || scope === 'today') {
-            filter.createdAt = { $gte: startOfToday, $lte: endOfToday };
-        } else if (date === 'yesterday') {
-            const startOfYesterday = new Date(startOfToday);
-            startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-            const endOfYesterday = new Date(endOfToday);
-            endOfYesterday.setDate(endOfYesterday.getDate() - 1);
-            filter.createdAt = { $gte: startOfYesterday, $lte: endOfYesterday };
-        } else if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            const [y, m, d] = date.split('-').map(Number);
-            const startOfDate = new Date(y, m - 1, d, 0, 0, 0, 0);
-            const endOfDate = new Date(y, m - 1, d, 23, 59, 59, 999);
-            filter.createdAt = { $gte: startOfDate, $lte: endOfDate };
+        let activeBounds = null;
+        if (date && date !== 'all' && date !== 'ALL') {
+            activeBounds = getDateBounds(date);
+        } else if (scope === 'today') {
+            activeBounds = todayBounds;
+        }
+
+        if (activeBounds) {
+            filter.createdAt = { $gte: activeBounds.start, $lte: activeBounds.end };
         }
 
         // Exclude unpaid pending/failed online payment checkout attempts so staff only sees confirmed orders
@@ -359,9 +352,11 @@ const getAllOrders = async (req, res) => {
 
         const orders = await Order.find(filter).sort({ createdAt: -1 });
 
-        // Calculate today's stats strictly between 00:00:00 and 23:59:59 (resets every new day)
-        const todayOrders = await Order.find({
-            createdAt: { $gte: startOfToday, $lte: endOfToday },
+        // Calculate stats strictly for the selected date window (defaulting to today's IST bounds)
+        const statsBounds = (activeBounds && scope !== 'today' && date !== 'today') ? activeBounds : todayBounds;
+
+        const statsOrders = await Order.find({
+            createdAt: { $gte: statsBounds.start, $lte: statsBounds.end },
             $nor: [
                 {
                     paymentMethod: { $in: ['Online Payment', 'ONLINE'] },
@@ -371,13 +366,13 @@ const getAllOrders = async (req, res) => {
         });
 
         const stats = {
-            todayOrdersCount: todayOrders.length,
-            pendingCount: todayOrders.filter((o) =>
+            todayOrdersCount: statsOrders.length,
+            pendingCount: statsOrders.filter((o) =>
                 ['PLACED', 'ACCEPTED', 'PREPARING'].includes(o.status)
             ).length,
-            readyCount: todayOrders.filter((o) => o.status === 'READY').length,
-            completedCount: todayOrders.filter((o) => o.status === 'COMPLETED').length,
-            todayRevenue: todayOrders
+            readyCount: statsOrders.filter((o) => o.status === 'READY').length,
+            completedCount: statsOrders.filter((o) => o.status === 'COMPLETED').length,
+            todayRevenue: statsOrders
                 .filter((o) => o.status !== 'CANCELLED')
                 .reduce((sum, o) => sum + (o.totalAmount || 0), 0),
         };

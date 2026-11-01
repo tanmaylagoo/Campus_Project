@@ -47,7 +47,16 @@ const AdminDashboard = () => {
         localStorage.getItem('admin_token') ||
         localStorage.getItem('token');
 
-      const response = await fetch(`${API_URL}/orders?scope=today`, {
+      // Get local client calendar date (YYYY-MM-DD)
+      const clientDate = (() => {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })();
+
+      const response = await fetch(`${API_URL}/orders?scope=today&date=${clientDate}`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),

@@ -42,9 +42,18 @@ const AdminOrders = () => {
         localStorage.getItem('admin_token') ||
         localStorage.getItem('token');
 
+      const getLocalDateStr = (offsetDays = 0) => {
+        const d = new Date();
+        d.setDate(d.getDate() - offsetDays);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
       const params = new URLSearchParams();
-      if (dateFilter === 'today') params.append('date', 'today');
-      else if (dateFilter === 'yesterday') params.append('date', 'yesterday');
+      if (dateFilter === 'today') params.append('date', getLocalDateStr(0));
+      else if (dateFilter === 'yesterday') params.append('date', getLocalDateStr(1));
       else if (dateFilter === 'custom' && customDate) params.append('date', customDate);
       else if (dateFilter === 'all') params.append('date', 'all');
 
